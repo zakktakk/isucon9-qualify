@@ -1,0 +1,32 @@
+version: '3'
+services:
+  python:
+    build: ./webapp/python
+    volumes:
+      - .:/app
+    ports:
+      - 5555:5555
+      - 7000:7000
+      - 8000:8000
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=mysql
+      - MYSQL_PASS=password
+  db:
+    image: arm64v8/mysql:8.0-oracle
+    volumes:
+      - ./webapp/sql:/docker-entrypoint-initdb.d
+      - ./webapp/sql/conf:/etc/mysql/conf.d
+      - ./datadir:/var/lib/mysql
+    environment:
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_USER=mysql
+      - MYSQL_PASS=password
+    ports:
+      - 3306:3306
+  golang:
+    image: golang:1.14.6
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: /bin/sh -c "while sleep 1000; do :; done"
